@@ -10,6 +10,8 @@ namespace
 
     struct glfw_library_initializer_t
     {
+        GLFWwindow* context_provider;
+
         static void error_callback(int error_code_, const char* description_)
         {
             std::cerr << "GLFW error callback: [ " << error_code_ << " ] "
@@ -17,12 +19,14 @@ namespace
         }
 
         glfw_library_initializer_t()
+            : context_provider{ nullptr }
         {
             glfwSetErrorCallback(error_callback);
         }
 
         ~glfw_library_initializer_t()
         {
+            glfwDestroyWindow(context_provider);
             glfwTerminate();
         }
         
@@ -31,6 +35,23 @@ namespace
             if (!glfwInit())
                 throw std::runtime_error("void glfw_library_initializer_t::initialize(): "
                                          "Failed to initialize GLFW. glfwInit()");
+
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, maple::configuration::opengl_version_major);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, maple::configuration::opengl_version_major);
+            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+            glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+
+            context_provider = glfwCreateWindow(100, 100, "", nullptr, nullptr);
+            if (!context_provider)
+                throw std::runtime_error("void glfw_library_initializer_t::initialize(): "
+                                         "Failed to create window. glfwCreateWindow()");
+            glfwMakeContextCurrent(context_provider);
+            if (!gladLoadGL(glfwGetProcAddress))
+            throw std::runtime_error("void glfw_library_initializer_t::initialize(): "
+                                     "Failed to create opengl context. gladLoadGL()");
+
+            out(glGetString(GL_RENDERER));
+
             is_glfw_library_initialized = true;
         }
     };
@@ -66,14 +87,9 @@ namespace maple
         if (!is_glfw_library_initialized)
             glfw_library_initializer.initialize();
 
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-
         m_handle->window = glfwCreateWindow(m_prop.width, m_prop.height,
                                             m_prop.title.c_str(),
-                                            nullptr, nullptr); 
+                                            nullptr, glfw_library_initializer.context_provider); 
         if (!m_handle->window)
             throw std::runtime_error("Window::Window(const WindowProperties& properties_): "
                                      "Failed to create window. glfwCreateWindow()");
@@ -88,13 +104,7 @@ namespace maple
             });
 
         glfwMakeContextCurrent(m_handle->window);
-        if (!gladLoadGL(glfwGetProcAddress))
-            throw std::runtime_error("Window::Window(const WindowProperties& properties_): "
-                                     "Failed to create opengl context. gladLoadGL()");
-
-        out(glGetString(GL_RENDERER));
-
-        //glfwSwapInterval(1);
+        glfwSwapInterval(1);
     }
 
     Window::~Window()
@@ -103,6 +113,8 @@ namespace maple
 
     void Window::set_title(const std::string& title_)
     {
+        m_prop.title = title_;
+        glfwSetWindowTitle(m_handle->window, title_.c_str());
     }
 
     std::string Window::get_title() const
@@ -129,7 +141,7 @@ namespace maple
     {
         glfwMakeContextCurrent(m_handle->window);
 
-        glClearColor(0.3f, 1.0f, 0.3f, 1.0f);
+        glClearColor(1.0f, 1.0f, m_prop.width/1000.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         glfwSwapBuffers(m_handle->window);
@@ -165,7 +177,7 @@ namespace maple
                 window->render();
             }
 
-            glfwPollEvents();
+            glfwWaitEvents();
 
         }
     }

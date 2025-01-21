@@ -9,6 +9,7 @@ int main()
     prop.title = "Window 1";
     auto win1 = maple::Window::create(prop);
     prop.title = "Window 2";
+    prop.width = 300;
     auto win2 = maple::Window::create(prop);
 
     maple::mainloop({ win1, win2 });
