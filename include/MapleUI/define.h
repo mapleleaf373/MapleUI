@@ -8,8 +8,11 @@
 #include <stdexcept>
 
 #include <memory>
+#include <functional>
+#include <utility>
 
 #include <iostream>
+
 
 #ifndef out
     #include <iostream>
@@ -28,3 +31,5 @@ namespace maple
     }
 
 }
+
+#include "event.h"

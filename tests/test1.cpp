@@ -3,16 +3,19 @@
 int main()
 {
     maple::WindowProperties prop{
-        .width = 800, .height = 600
+        .width = 800, .height = 600,
+        .title = "Test 1 Window"
     };
 
-    prop.title = "Window 1";
-    auto win1 = maple::Window::create(prop);
-    prop.title = "Window 2";
-    prop.width = 300;
-    auto win2 = maple::Window::create(prop);
+    bool ok = false;
+    bool* okay = &ok;
+    auto window = maple::Window::create(prop);
+    window->on_close_attempt([=]() {
+        out("closing....");
+        return true;
+        });
 
-    maple::mainloop({ win1, win2 });
+    maple::mainloop();
 
     return 0;
 }
