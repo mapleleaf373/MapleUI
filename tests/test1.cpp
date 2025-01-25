@@ -1,21 +1,23 @@
-#include <MapleUI/MapleUI.h>
+#include <MapleUI/context.h>
 
 int main()
 {
+    /*
     maple::WindowProperties prop{
         .width = 800, .height = 600,
         .title = "Test 1 Window"
     };
 
-    bool ok = false;
-    bool* okay = &ok;
     auto window = maple::Window::create(prop);
-    window->on_close_attempt([=]() {
-        out("closing....");
-        return true;
-        });
 
     maple::mainloop();
+    */
+
+    using namespace maple;
+
+    auto root = Context::create();
+    auto window = Window::create(root);
+    root->mainloop();    
 
     return 0;
 }

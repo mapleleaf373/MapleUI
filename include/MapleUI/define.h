@@ -30,6 +30,24 @@ namespace maple
 
     }
 
-}
+    namespace event_type
+    {
 
-#include "event.h"
+        using WindowCloseAttempt    = std::function<bool()>;
+        using WindowClose           = std::function<void()>;
+
+    }
+
+    struct Point
+    {
+        int x{ 0 };
+        int y{ 0 };
+    };
+
+    struct Size
+    {
+        int width{ 0 };
+        int height{ 0 };
+    };
+
+}

@@ -4,3 +4,7 @@ out/
 build/
 
 CMakeSettings.json
+
+include/MapleUI/widget/
+include/MapleUI/window.h
+src/window.cpp

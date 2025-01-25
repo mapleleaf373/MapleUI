@@ -6,6 +6,12 @@ set ( CMAKE_CXX_STANDARD_REQUIRED True )
 
 project ( MapleUI )
 
+if(MSVC)
+  add_compile_options(/W4)
+else()
+  add_compile_options(-Wall -Wextra -Wpedantic -Werror)
+endif()
+
 add_subdirectory ( dependencies )
 
 add_subdirectory ( src )

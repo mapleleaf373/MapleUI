@@ -1,6 +1,8 @@
 
 add_library ( MapleUI STATIC
-              window.cpp
+              context.cpp
+              #window.cpp
+              opengl_util/general.cpp
               )
 
 set_target_properties ( MapleUI PROPERTIES 
